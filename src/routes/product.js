@@ -1,6 +1,7 @@
 import express from 'express';
-import { createProduct, deleteProductById, getAllProducts, getBySlug, getProductById, relatedProduct, searchProduct, updateProduct} from '../controllers/product.js';
+import { createProduct, deleteProductById, getAllProducts, getBySlug, getProductById, processPayment, relatedProduct, searchProduct, updateProduct} from '../controllers/product.js';
 import { upload } from '../helpers/multer.js';
+import { isLoggedIn } from '../middlewares/auth.js';
 
 const router = express.Router();
 
@@ -13,6 +14,10 @@ router.get("/slug/:slug", getBySlug)
 router.delete("/:productId", deleteProductById)
 router.post("/search", searchProduct)
 router.get("/related/:productId", relatedProduct)
+
+//payments
+router.post("/payment", isLoggedIn, processPayment)
+
 
 
 

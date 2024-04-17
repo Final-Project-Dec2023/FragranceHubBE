@@ -13,14 +13,14 @@ dotenv.config();
 const app = express();
 const port = process.env.PORT || 8000;
 const dbUrl = process.env.MONGODB_URI;
-
+console.log(process.env.EMAIL_FROM);
+console.log( process.env.SMTP_KEY
+);
 // Middleware
 app.use(express.json());
 // app.use(cors()); 
 // app.use(helmet()); 
 app.use(morgan("dev"));
-
-
 
 // Connect to DB
 connectDB(dbUrl);

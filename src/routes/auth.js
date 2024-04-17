@@ -1,7 +1,7 @@
 import express from 'express';
-import { register, login } from '../controllers/auth.js';
+import { register, login, forgotPassword, resetPassword } from '../controllers/auth.js';
 import { upload } from '../helpers/multer.js';
-import { getAllUsers, getOneUser, updateUser } from '../controllers/user.js';
+import { getAllUsers, getOneUser, updateUser, updateUserRole } from '../controllers/user.js';
 import { isLoggedIn } from '../middlewares/auth.js';
 
 const router = express.Router();
@@ -14,7 +14,12 @@ router.post('/login', login)
 router.get("/users", getAllUsers)
 router.get("/user/:userId", getOneUser)
 router.put("/user/update", isLoggedIn, upload.single("image"),  updateUser)
+router.post("/user/role", isLoggedIn,  updateUserRole)
 
+
+// forgot password ande reset password
+router.post("/forgot-password", forgotPassword)
+router.post("/reset-password", resetPassword)
 
 
 export default router

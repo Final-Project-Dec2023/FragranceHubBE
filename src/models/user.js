@@ -30,6 +30,10 @@ const userSchema = new Schema(
             type: Number,
             default: 0,
         },
+        isAdmin: {
+            type: Boolean,
+            default: false,
+        },
         address: {
             type: Object,
             default: {
@@ -39,6 +43,9 @@ const userSchema = new Schema(
                 zip: 123456
             },
         },
+        OTP: {
+            type: String,
+        }
     },
     { timestamps: true }
 );

@@ -1,6 +1,8 @@
 import Product from "../models/product.js";
+import Order from "../models/order.js";
 import { cloudinary } from "../helpers/cloudinary.config.js";
 import slugify from "slugify";
+import { sendEmailFunction } from "../helpers/email.js";
 
 export const createProduct = async (req, res) => {
   try {
@@ -43,8 +45,13 @@ export const createProduct = async (req, res) => {
       images: uploadedImages,
     });
 
+
     await newProduct.save();
 
+    //send email
+    const sub = "New Product Notification"
+    const message = `A new product ${newProduct.name} has been added to our list of products. `
+    await sendEmailFunction("blardomu@gmail.com", sub, message);
     res.status(201).json({
       success: true,
       message: "Product created successfully",
@@ -270,11 +277,71 @@ export const relatedProduct = async (req, res) => {
         // { brand: product.brand },       // Find by brand
       ],
       _id: { $ne: productId } // Exclude the provided product itself from the related products
-    }).limit(5).populate("category"); // Limit
+    }).limit(5).populate("category");
 
     res.status(200).json({ success: true, relatedProducts });
   } catch (err) {
     console.error("Error fetching related products:", err.message);
     res.status(500).json({ success: false, message: "Failed to fetch related products", error: err.message });
+  }
+};
+
+
+export const processPayment = async (req, res) => {
+  try {
+    // payment reference and cart items
+    const { paymentRef, cartItems } = req.body;
+
+    // validations
+    if (paymentRef === null || paymentRef === undefined) {
+      return res.json({ success: false, message: "Payment ref is required" });
+    }
+    if (!cartItems.length > 0) {
+      return res.json({ success: false, message: "No cart or cart is empty" });
+    }
+
+    let total = 0;
+    const orderedProducts = [];
+
+    // Fetch each product from the DB and calculate the total
+    for (let i = 0; i < cartItems.length; i++) {
+      const product = await Product.findById(cartItems[i]);
+      if (!product) {
+        return res.json({ success: false, message: `Product with ID ${cartItems[i]} not found` });
+      }
+      total += product.price;
+      orderedProducts.push(product._id);
+    }
+
+    console.log(total);
+
+    // initialize payment gateway
+    let newTransaction = {
+      amount: total,
+      paymentStatus: paymentRef,
+    };
+
+    // If payment is successful, create new order
+    if (newTransaction.paymentStatus === true) {
+      // create new order
+      const order = new Order({
+        products: orderedProducts, 
+        payment: newTransaction,
+        buyer: req.user._id,
+        totalAmount: newTransaction.amount
+      });
+
+      // await order.save();
+
+      console.log("Payment Successful, order created");
+      return res.json({ success: true, message: "Payment successful, order created", order });
+    } else {
+      console.log("Payment Failed, no order created");
+      return res.json({ success: false, message: "Payment failed, order not created" });
+    }
+
+  } catch (err) {
+    console.error("Payment failed, order not created", err.message);
+    res.status(500).json({ success: false, message: "Payment failed, order not created", error: err.message });
   }
 };

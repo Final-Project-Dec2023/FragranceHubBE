@@ -83,3 +83,33 @@ export const updateUser = async (req, res) => {
     }
   };
   
+  export const updateUserRole = async (req, res) => {
+    try {
+      const { _id } = req.user;
+      const { role } = req.body;
+  
+      console.log("Role is: ", role);
+
+      const updateQuery = {
+        role: role,
+        isAdmin: role === 1 ? true : false,
+      };
+  
+      const updatedUser = await User.findByIdAndUpdate(_id, updateQuery, {
+        new: true,
+      });
+  
+      if (!updatedUser) {
+        return res.status(404).json({ error: "User not found" });
+      }
+  
+      updatedUser.password = undefined;
+      res.json({ message: "User role updated successfully", user: updatedUser });
+    } catch (err) {
+      console.log(err);
+      res
+        .status(500)
+        .json({ error: "Failed to update user role", errorMsg: err.message });
+    }
+  };
+  
