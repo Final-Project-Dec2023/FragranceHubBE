@@ -193,7 +193,14 @@ export const resetPassword = async(req, res) => {
     
   } catch (err) {
     console.log(err.message);
-    return res.status(500).json({success: false, message: "Password reset failed", error: err.message});
+    return res.status(500).j
+    son({success: false, message: "Password reset failed", error: err.message});
     
   }
-}
+
+  
+
+git commit -m "first commit"
+git branch -M main
+git remote add origin https://github.com/edwin07046688043/FrangranceBE.git
+git push -u origin main
