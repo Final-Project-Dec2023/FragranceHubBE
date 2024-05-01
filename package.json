@@ -15,7 +15,7 @@
     "express",
     "app"
   ],
-  "author": "blard",
+  "author": "toby",
   "license": "ISC",
   "dependencies": {
     "bcrypt": "^5.1.1",
