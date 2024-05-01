@@ -7,7 +7,7 @@ import { connectDB } from "./src/db.config.js";
 import authRouter from "./src/routes/auth.js";
 import categoryRouter from "./src/routes/category.js";
 import productRouter from "./src/routes/product.js";
-
+import orderRouter from "./src/routes/order.js";
 dotenv.config();
 
 const app = express();
@@ -29,6 +29,7 @@ connectDB(dbUrl);
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/category", categoryRouter);
 app.use("/api/v1/product", productRouter);
+app.use("/api/v1/order", orderRouter);
 
 
 
